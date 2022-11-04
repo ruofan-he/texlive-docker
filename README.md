@@ -15,12 +15,12 @@ docker run --rm -v ${PWD}:/texsrc texlive-docker dvipdfmx sample
 ## vscode latexレシピ
 ```
 {
-    "workbench.colorTheme": "Default Light+",
     "latex-workshop.latex.recipes": [
         {
             "name": "texlive-UpLatex",
             "tools": [
                 "docker-upLatex",
+                "docker-sed",
                 "docker-upbibtex",
                 "docker-dvipdfmx"
             ]
@@ -29,6 +29,7 @@ docker run --rm -v ${PWD}:/texsrc texlive-docker dvipdfmx sample
             "name": "texlive-pLatex",
             "tools": [
                 "docker-pLatex",
+                "docker-sed",
                 "docker-pbibtex",
                 "docker-dvipdfmx"
             ]
@@ -72,6 +73,23 @@ docker run --rm -v ${PWD}:/texsrc texlive-docker dvipdfmx sample
                 "-kanji=utf8",
                 "-halt-on-error",
                 "%DOCFILE%",
+            ],
+            "env": {}
+        },
+        {
+            "name": "docker-sed",
+            "command": "docker",
+            "args": [
+                "run",
+                "--rm",
+                "-v",
+                "%WORKSPACE_FOLDER%:/texsrc",
+                "-w",
+                "/texsrc/%RELATIVE_DIR%",
+                "texlive-docker",
+                "bash",
+                "-c",
+                "cat %DOCFILE%.synctex.gz | gzip -d |sed -e 's@/texsrc@%WORKSPACE_FOLDER%@' | gzip -c > %DOCFILE%.synctex.gz" 
             ],
             "env": {}
         },
